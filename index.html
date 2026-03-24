@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Chrollo  Studio 🐋 | Dark Star Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Paleta de colores Oscura y Neón */
+            --bg-deep: #080a10;
+            --bg-sidebar: #11141d;
+            --accent: #38bdf8; /* Azul neón */
+            --accent-glow: rgba(56, 189, 248, 0.3);
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #2e3748;
+            --panel-bg: #1e293b;
+            --pink-deco: #f472b6;
+        }
+
+        * { box-sizing: border-box; outline: none; }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif; 
+            display: flex; 
+            background-color: var(--bg-deep); 
+            margin: 0; 
+            height: 100vh; 
+            overflow: hidden; 
+            color: var(--text-main); 
+        }
+
+        /* --- FONDO ANIMADO DE ESTRELLAS --- */
+        #starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Detrás de todo */
+        }
+
+        /* --- SIDEBAR UI --- */
+        .sidebar { 
+            width: 320px; 
+            background: var(--bg-sidebar); 
+            padding: 25px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            box-shadow: 10px 0 30px rgba(0,0,0,0.5); 
+            z-index: 10; 
+            overflow-y: auto; 
+            border-right: 1px solid var(--border);
+        }
+
+        /* Scrollbar personalizado para la sidebar */
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand h2 { 
+            color: var(--text-main); 
+            text-align: center; 
+            margin: 0; 
+            font-size: 1.2rem; 
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .brand h2 span { color: var(--accent); }
+        
+        .search-box { 
+            padding: 10px 15px; 
+            background: var(--panel-bg);
+            border: 1px solid var(--border); 
+            border-radius: 10px; 
+            font-size: 0.85rem; 
+            color: var(--text-main);
+            transition: border-color 0.2s;
+        }
+        .search-box:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }
+        
+        .control-group { 
+            background: rgba(255,255,255,0.03); 
+            padding: 15px; 
+            border-radius: 12px; 
+            border: 1px solid var(--border); 
+        }
+
+        .label-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            font-size: 0.75rem; 
+            margin-bottom: 8px; 
+            font-weight: 600; 
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .label-row span.val { color: var(--accent); font-weight: 800; font-size: 0.85rem; }
+        
+        select, input[type="range"], button { 
+            width: 100%; 
+            border-radius: 8px; 
+            font-family: inherit; 
+        }
+
+        select {
+            background: var(--panel-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 10px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        select:focus { border-color: var(--accent); }
+
+        optgroup { background: var(--bg-sidebar); color: var(--text-muted); font-style: normal; }
+        option { color: var(--text-main); padding: 5px; }
+        
+        /* Estilo Sliders */
+        input[type="range"] { 
+            -webkit-appearance: none; 
+            background: transparent; 
+            margin: 10px 0;
+            padding: 0; border: none;
+        }
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%; height: 6px; cursor: pointer;
+            background: var(--border); border-radius: 3px;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            height: 18px; width: 18px; border-radius: 50%;
+            background: var(--accent); cursor: pointer;
+            -webkit-appearance: none; margin-top: -6px;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        input[type="color"] {
+            border: 1px solid var(--border);
+            height: 40px;
+            background: var(--panel-bg);
+            cursor: pointer;
+            padding: 3px;
+        }
+        
+        /* Botones */
+        button { 
+            cursor: pointer; 
+            background: var(--accent); 
+            color: #000; 
+            border: none; 
+            font-weight: 700; 
+            padding: 12px;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+        button:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        button:active { transform: translateY(0); }
+
+        #addLayerBtn { background: var(--pink-deco); color: #fff; margin-bottom: 10px;}
+
+        .btn-danger { background: #331c20; color: #f87171; border: 1px solid #552b31; margin-top: 5px; }
+        .btn-danger:hover { background: #4c262c; }
+
+        #downloadBtn { background: #1e293b; color: var(--text-main); border: 1px solid var(--border); }
+        #downloadBtn:hover { background: var(--panel-bg); border-color: var(--text-muted); }
+
+        /* --- VIEWPORT & CANVAS --- */
+        .viewport { 
+            flex-grow: 1; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 30px; 
+            overflow: hidden; 
+            position: relative; 
+        }
+
+        .canvas-container { 
+            position: relative; 
+            background: white; /* El papel siempre es blanco */
+            box-shadow: 0 20px 60px rgba(0,0,0,0.7); 
+            border-radius: 8px; 
+            border: 4px solid var(--sidebar);
+        }
+        canvas { position: absolute; top: 0; left: 0; touch-action: none; cursor: crosshair; }
+
+        /* --- HUD CURSOR --- */
+        #hud-cursor {
+            position: fixed;
+            pointer-events: none;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10000;
+            mix-blend-mode: difference; /* Lo hace visible sobre cualquier color */
+            display: none;
+        }
+
+        /* --- CAPAS UI --- */
+        #layerStack { margin-top: 10px; }
+        .layer-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            padding: 10px; 
+            background: rgba(255,255,255,0.03); 
+            border: 1px solid var(--border); 
+            margin-top: 5px; 
+            border-radius: 8px; 
+            font-size: 0.8rem; 
+            cursor: pointer; 
+            transition: 0.2s;
+        }
+        .layer-item:hover { background: rgba(255,255,255,0.06); }
+        .layer-item.active { 
+            border-color: var(--accent); 
+            background: rgba(56, 189, 248, 0.1); 
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.15);
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+<div id="hud-cursor"></div>
+
+<aside class="sidebar">
+    <div class="brand">
+        <span style="font-size: 1.5rem;">🐋</span>
+        <h2>Sinclair <span>Studio</span> Studio</h2>
+    </div>
+    
+    <input type="text" id="searchBrush" class="search-box" placeholder="🔍 Buscar pincel...">
+    
+    <div class="control-group">
+        <div class="label-row">Pincel Seleccionado</div>
+        <select id="brushType">
+            <optgroup label="🦆 Duck Kamomi Style">
+                <option value="k_pencil">Lápiz Grafito HB</option>
+                <option value="k_watercolor">Acuarela Fluida</option>
+                <option value="k_marker">Marcador Cincel</option>
+                <option value="k_pastel">Pastel Seco</option>
+                <option value="k_ink">Tinta China Sumi-e</option>
+                <option value="k_splatter">Salpicadura Artística</option>
+            </optgroup>
+            <optgroup label="🎨 Clip Studio Essentials">
+                <option value="cs_sucream">SU-Cream Pencil</option>
+                <option value="cs_nong">Nong Pen (G-Pen)</option>
+                <option value="cs_oil">Óleo Empastado</option>
+                <option value="cs_charcoal">Carboncillo Artemus</option>
+                <option value="cs_airbrush">Aerógrafo Suave</option>
+            </optgroup>
+            <optgroup label="🖌️ Texturas & Efectos">
+                <option value="t_sponge">Esponja Natural</option>
+                <option value="t_drybrush">Pincel Seco Peludo</option>
+                <option value="t_hatch">Sombreado (Hatch)</option>
+                <option value="t_fur">Generador de Pelo</option>
+                <option value="t_cloud">Nubes / Humo</option>
+            </optgroup>
+            <optgroup label="✨ Magia & Luz">
+                <option value="e_neon">Neón Incandescente</option>
+                <option value="e_sparkle">Destellos Mágicos</option>
+                <option value="e_glitter">Purpurina Fina</option>
+                <option value="e_bokeh">Bokeh Fotográfico</option>
+                <option value="e_rainbow">Pincel Arcoíris</option>
+            </optgroup>
+            <optgroup label="🧹 Sistema">
+                <option value="s_round">Redondo Básico</option>
+                <option value="s_eraser">Borrador Duro</option>
+                <option value="s_soft_eraser">Borrador Suave</option>
+            </optgroup>
+        </select>
+    </div>
+
+    <div class="control-group">
+        <div class="label-row">Punta del Pincel</div>
+        <select id="tipType">
+            <option value="round">🟢 Redonda (Estándar)</option>
+            <option value="square">🟦 Cuadrada</option>
+            <option value="flat">📐 Caligráfica (Inclinada)</option>
+        </select>
+    </div>
+
+    <div class="control-group">
+        <div class="label-row">Tamaño <span id="sizeVal" class="val">30px</span></div>
+        <input type="range" id="sizeRange" min="1" max="200" value="30">
+
+        <div class="label-row" style="margin-top:15px;">Opacidad <span id="opacityVal" class="val">100%</span></div>
+        <input type="range" id="opacityRange" min="1" max="100" value="100">
+
+        <div class="label-row" style="margin-top:15px;">Color Harmony</div>
+        <input type="color" id="colorPicker" value="#38bdf8">
+    </div>
+
+    <div class="control-group">
+        <div class="label-row">Capas</div>
+        <button id="addLayerBtn">+ Nueva Capa</button>
+        <div id="layerStack"></div>
+    </div>
+
+    <div style="margin-top:auto; display:flex; flex-direction:column; gap:5px;">
+        <button id="downloadBtn">Descargar Arte 📥</button>
+        <button id="clearBtn" class="btn-danger">Limpiar Capa Activa</button>
+    </div>
+</aside>
+
+<main class="viewport">
+    <div class="canvas-container" id="container" style="width: 900px; height: 700px;">
+        </div>
+</main>
+
+<script>
+    const container = document.getElementById('container');
+    const layerStackUI = document.getElementById('layerStack');
+    const brushSelect = document.getElementById('brushType');
+    const tipSelect = document.getElementById('tipType'); // Control de puntas
+    const opacityRange = document.getElementById('opacityRange'); // Control de opacidad
+    const colorPicker = document.getElementById('colorPicker');
+    const sizeRange = document.getElementById('sizeRange');
+    const searchBrush = document.getElementById('searchBrush');
+    const hudCursor = document.getElementById('hud-cursor');
+
+    let layers = [];
+    let activeIdx = 0;
+    let isDrawing = false;
+    let lastX = 0, lastY = 0, lastTime = 0;
+    const W = 900, H = 700;
+
+    // --- MOTOR DEL FONDO DE ESTRELLAS CAÍDAS ---
+    const starCanvas = document.getElementById('starfield');
+    const starCtx = starCanvas.getContext('2d');
+    let stars = [];
+
+    function resizeStarfield() {
+        starCanvas.width = window.innerWidth;
+        starCanvas.height = window.innerHeight;
+    }
+
+    class Star {
+        constructor() {
+            this.reset();
+        }
+        reset() {
+            this.x = Math.random() * starCanvas.width;
+            this.y = Math.random() * -starCanvas.height; // Empiezan arriba, fuera de vista
+            this.size = Math.random() * 2;
+            this.speed = Math.random() * 0.5 + 0.1; // Velocidad de caída lenta
+            this.alpha = Math.random() * 0.5 + 0.2;
+            this.blinkSpeed = Math.random() * 0.02;
+        }
+        update() {
+            this.y += this.speed;
+            this.alpha += this.blinkSpeed;
+            if (this.alpha > 0.8 || this.alpha < 0.2) this.blinkSpeed *= -1;
+
+            if (this.y > starCanvas.height) {
+                this.reset();
+            }
+        }
+        draw() {
+            starCtx.fillStyle = `rgba(255, 255, 255, ${Math.abs(this.alpha)})`;
+            starCtx.beginPath();
+            starCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            starCtx.fill();
+        }
+    }
+
+    function initStarfield() {
+        resizeStarfield();
+        stars = [];
+        for (let i = 0; i < 200; i++) { 
+            stars.push(new Star());
+        }
+    }
+
+    function animateStarfield() {
+        starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+        stars.forEach(star => {
+            star.update();
+            star.draw();
+        });
+        requestAnimationFrame(animateStarfield);
+    }
+
+    window.addEventListener('resize', resizeStarfield);
+    initStarfield();
+    animateStarfield();
+
+
+    // --- SISTEMA DE CAPAS ---
+    function createLayer(name = `Capa ${layers.length + 1}`, isBase = false) {
+        const canvas = document.createElement('canvas');
+        canvas.width = W; canvas.height = H;
+        container.appendChild(canvas);
+        
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        
+        if (isBase) { 
+            ctx.fillStyle = 'white'; 
+            ctx.fillRect(0,0,W,H); 
+        }
+        
+        layers.push({ canvas, ctx, name, visible: true });
+        selectLayer(layers.length - 1);
+    }
+
+    function selectLayer(idx) {
+        activeIdx = idx;
+        layers.forEach((l, i) => {
+            l.canvas.style.pointerEvents = (i === activeIdx) ? 'auto' : 'none';
+        });
+        renderUI();
+    }
+
+    function renderUI() {
+        layerStackUI.innerHTML = '';
+        layers.slice().reverse().forEach((l, i) => {
+            const realIdx = layers.length - 1 - i;
+            const div = document.createElement('div');
+            div.className = `layer-item ${realIdx === activeIdx ? 'active' : ''}`;
+            div.innerHTML = `<span>${l.name}</span>`;
+            div.onclick = () => selectLayer(realIdx);
+            layerStackUI.appendChild(div);
+        });
+    }
+
+    function getMousePos(e) {
+        const rect = container.getBoundingClientRect();
+        const clientX = e.touches ? e.touches.clientX : e.clientX;
+        const clientY = e.touches ? e.touches.clientY : e.clientY;
+        return {
+            x: clientX - rect.left,
+            y: clientY - rect.top
+        };
+    }
+
+    function updateHudCursor(e) {
+        const size = sizeRange.value;
+        hudCursor.style.width = size + 'px';
+        hudCursor.style.height = size + 'px';
+        
+        // El hud del cursor responde a los estilos de punta seleccionados
+        if (tipType.value === 'square' || tipType.value === 'flat') {
+            hudCursor.style.borderRadius = '4px';
+        } else {
+            hudCursor.style.borderRadius = '50%';
+        }
+
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+        hudCursor.style.left = clientX + 'px';
+        hudCursor.style.top = clientY + 'px';
+    }
+
+    function start(e) {
+        if (layers.length === 0) return;
+        isDrawing = true;
+        const pos = getMousePos(e);
+        lastX = pos.x;
+        lastY = pos.y;
+        lastTime = Date.now();
+        
+        draw(e); 
+    }
+
+    function draw(e) {
+        updateHudCursor(e);
+
+        if (!isDrawing || layers.length === 0) return;
+        
+        const pos = getMousePos(e);
+        const x = pos.x;
+        const y = pos.y;
+        
+        const now = Date.now();
+        const dist = Math.hypot(x - lastX, y - lastY);
+        const dt = now - lastTime || 1;
+        const speed = dist / dt;
+        
+        const bSize = parseInt(sizeRange.value);
+        const bColor = colorPicker.value;
+        const bOpacity = parseInt(opacityRange.value) / 100; // Normalizar opacidad entre 0 y 1
+        const bTip = tipSelect.value;
+        const { ctx } = layers[activeIdx];
+
+        ctx.save();
+        
+        // Manejo de la forma de la punta
+        if (bTip === 'square') {
+            ctx.lineCap = 'square';
+            ctx.lineJoin = 'miter';
+        } else {
+            ctx.lineCap = 'round'; 
+            ctx.lineJoin = 'round';
+        }
+
+        ctx.strokeStyle = bColor; 
+        ctx.fillStyle = bColor;
+        ctx.globalAlpha = bOpacity; // Opacidad global controlada por el usuario
+        ctx.shadowBlur = 0;
+        ctx.globalCompositeOperation = 'source-over';
+
+        const type = brushSelect.value;
+        const dSize = Math.max(1, bSize - speed * 1.5); 
+
+        // Si es punta plana (caligráfica), usamos transformaciones geométricas
+        if (bTip === 'flat') {
+            ctx.translate(x, y);
+            ctx.rotate(-Math.PI / 4); // Ángulo de 45°
+            ctx.scale(1, 0.3); // Aplastamos el pincel
+            ctx.translate(-x, -y);
+        }
+
+        switch(type) {
+            // --- GRUPO: DUCK KAMOMI ---
+            case 'k_pencil':
+                ctx.globalAlpha = 0.5 * bOpacity; 
+                ctx.lineWidth = Math.max(0.5, dSize * 0.4);
+                ctx.shadowBlur = 0.5; 
+                ctx.shadowColor = bColor;
+                ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
+                break;
+            case 'k_watercolor':
+                ctx.globalAlpha = 0.08 * bOpacity; 
+                ctx.shadowBlur = bSize/2; 
+                ctx.shadowColor = bColor;
+                ctx.beginPath(); ctx.arc(x, y, bSize/2, 0, Math.PI*2); ctx.fill();
+                break;
+            case 'k_marker':
+                ctx.globalAlpha = 0.4 * bOpacity; 
+                ctx.lineWidth = bSize; 
+                ctx.lineCap = 'square';
+                ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
+                break;
+            case 'k_pastel':
+                ctx.globalAlpha = 0.4 * bOpacity;
+                for(let i=0; i<10; i++) {
+                    const r = Math.random() * bSize;
+                    const a = Math.random() * Math.PI * 2;
+                    ctx.fillRect(x + Math.cos(a)*r, y + Math.sin(a)*r, 1.5, 1.5);
+                }
+                break;
+            case 'k_ink':
+                ctx.globalAlpha = 0.9 * bOpacity; ctx.lineWidth = dSize;
+                ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
+                if(speed < 0.5 && Math.random() > 0.95) { ctx.beginPath(); ctx.arc(x, y + dSize, dSize*1.2, 0, Math.PI*2); ctx.fill(); }
+                break;
+            case 'k_splatter':
+                if(Math.random() > 0.8) {
+                    for(let i=0; i<5; i++) {
+                        ctx.beginPath(); ctx.arc(x + (Math.random()-0.5)*bSize*3, y + (Math.random()-0.5)*bSize*3, Math.random()*(bSize/5), 0, Math.PI*2); ctx.fill();
+                    }
+                }
+                break;
+
+            // --- GRUPO: CLIP STUDIO ---
+            case 'cs_sucream':
+                ctx.globalAlpha = 0.8 * bOpacity; ctx.lineWidth = dSize;
+                ctx.shadowBlur = 1; ctx.shadowColor = bColor;
+                ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
+                break;
+            case 'cs_nong':
+                ctx.globalAlpha = Math.max(0.2, 1 - speed/10) * bOpacity; ctx.lineWidth = dSize;
+                ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
+                break;
+            case 'cs_oil':
+                ctx.lineWidth = bSize; ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
+                ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = bSize/3;
+                ctx.beginPath(); ctx.moveTo(lastX+2, lastY+2); ctx.lineTo(x+2, y+2); ctx.stroke();
+                break;
+            case 'cs_charcoal':
+                ctx.globalAlpha = 0.3 * bOpacity; ctx.lineWidth = bSize * (1 + Math.random());
+                ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
+                break;
+            case 'cs_airbrush':
+                ctx.globalAlpha = 0.1 * bOpacity; ctx.shadowBlur = bSize; ctx.shadowColor = bColor;
+                ctx.beginPath(); ctx.arc(x, y, bSize/2, 0, Math.PI*2); ctx.fill();
+                break;
+
+            // --- GRUPO: TEXTURAS ---
+            case 't_sponge':
+                ctx.globalAlpha = 0.2 * bOpacity;
+                for(let i=0; i<6; i++) {
+                    ctx.beginPath(); ctx.arc(x + (Math.random()-0.5)*bSize, y + (Math.random()-0.5)*bSize, Math.random()*(bSize/3), 0, Math.PI*2); ctx.fill();
+                }
+                break;
+            case 't_drybrush':
+                ctx.globalAlpha = 0.5 * bOpacity; ctx.lineWidth = 1;
+                for(let i=0; i<10; i++) {
+                    const off = (Math.random()-0.5)*bSize;
+                    ctx.beginPath(); ctx.moveTo(lastX+off, lastY+off); ctx.lineTo(x+off, y+off); ctx.stroke();
+                }
+                break;
+            case 't_hatch':
+                ctx.lineWidth = 1; ctx.globalAlpha = 0.6 * bOpacity;
+                const angle = Math.PI / 4; 
+                const cosA = Math.cos(angle) * bSize/2;
+                const sinA = Math.sin(angle) * bSize/2;
+                ctx.beginPath(); ctx.moveTo(x - cosA, y - sinA); ctx.lineTo(x + cosA, y + sinA); ctx.stroke();
+                break;
+            case 't_fur':
+                ctx.lineWidth = 0.5; ctx.globalAlpha = 0.5 * bOpacity;
+                for(let i=0; i<5; i++) {
+                    ctx.beginPath(); ctx.moveTo(x, y);
+                    ctx.quadraticCurveTo(x+(Math.random()-0.5)*bSize, y+(Math.random()-0.5)*bSize, x+(Math.random()-0.5)*bSize*2, y+(Math.random()-0.5)*bSize*2);
+                    ctx.stroke();
+                }
+                break;
+            case 't_cloud':
+                ctx.globalAlpha = 0.03 * bOpacity; ctx.shadowBlur = bSize/2; ctx.shadowColor = 'white';
+                ctx.fillStyle = bColor;
+                ctx.beginPath(); ctx.arc(x, y, bSize, 0, Math.PI*2); ctx.fill();
+                break;
+
+            // --- GRUPO: EFECTOS ---
+            case 'e_neon':
+                ctx.shadowBlur = 15; ctx.shadowColor = bColor; ctx.lineWidth = bSize/2;
+                ctx.strokeStyle = 'white'; ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
+                break;
+            case 'e_sparkle':
+                if(Math.random() > 0.85) {
+                    ctx.fillStyle = 'white'; ctx.shadowBlur = 10; ctx.shadowColor = bColor;
+                    ctx.font = `${bSize}px serif`; ctx.fillText("✨", x, y);
+                }
+                break;
+            case 'e_glitter':
+                for(let i=0; i<10; i++) {
+                    ctx.fillStyle = `hsl(${Math.random()*360}, 100%, 80%)`;
+                    ctx.fillRect(x + (Math.random()-0.5)*bSize, y + (Math.random()-0.5)*bSize, 2, 2);
+                }
+                break;
+            case 'e_bokeh':
+                ctx.globalAlpha = 0.2 * bOpacity; ctx.beginPath();
+                const rB = Math.random()*(bSize/2);
+                ctx.arc(x + (Math.random()-0.5)*bSize, y + (Math.random()-0.5)*bSize, rB, 0, Math.PI*2); ctx.fill();
+                break;
+            case 'e_rainbow':
+                ctx.strokeStyle = `hsl(${(now/10) % 360}, 80%, 60%)`; ctx.lineWidth = bSize;
+                ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
+                break;
+
+            // --- GRUPO: SISTEMA ---
+            case 's_eraser':
+                ctx.globalCompositeOperation = 'destination-out'; ctx.lineWidth = bSize;
+                ctx.globalAlpha = bOpacity; // La goma también puede ser traslúcida
+                ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
+                break;
+            case 's_soft_eraser':
+                ctx.globalCompositeOperation = 'destination-out'; ctx.globalAlpha = 0.3 * bOpacity;
+                ctx.shadowBlur = bSize/2; ctx.shadowColor = 'black';
+                ctx.beginPath(); ctx.arc(x, y, bSize/2, 0, Math.PI*2); ctx.fill();
+                break;
+            default: // Redondo básico
+                ctx.lineWidth = bSize; ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
+        }
+
+        ctx.restore();
+        lastX = x; lastY = y; lastTime = now;
+    }
+
+    // --- EVENTOS ---
+    searchBrush.oninput = () => {
+        const term = searchBrush.value.toLowerCase();
+        Array.from(brushSelect.options).forEach(opt => opt.style.display = opt.text.toLowerCase().includes(term) ? 'block' : 'none');
+    };
+    
+    sizeRange.oninput = () => {
+        document.getElementById('sizeVal').innerText = sizeRange.value + 'px';
+    };
+
+    opacityRange.oninput = () => {
+        document.getElementById('opacityVal').innerText = opacityRange.value + '%';
+    };
+    
+    document.getElementById('addLayerBtn').onclick = () => createLayer();
+    
+    document.getElementById('clearBtn').onclick = () => { 
+        if(layers.length > 0 && confirm("¿Limpiar capa activa?")) {
+            const {ctx} = layers[activeIdx];
+            if (activeIdx === 0) { // Base
+                ctx.fillStyle = 'white'; ctx.fillRect(0,0,W,H);
+            } else {
+                ctx.clearRect(0,0,W,H);
+            }
+        }
+    };
+    
+    document.getElementById('downloadBtn').onclick = () => {
+        if (layers.length === 0) return;
+        const final = document.createElement('canvas'); final.width = W; final.height = H;
+        const fctx = final.getContext('2d');
+        layers.forEach(l => {
+            if(l.visible) fctx.drawImage(l.canvas, 0, 0);
+        });
+        const link = document.createElement('a'); link.download = 'ballenita-art.png'; link.href = final.toDataURL(); link.click();
+    };
+
+    container.addEventListener('mousedown', start);
+    window.addEventListener('mousemove', draw);
+    window.addEventListener('mouseup', () => isDrawing = false);
+
+    container.addEventListener('touchstart', (e) => { e.preventDefault(); start(e); });
+    window.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); });
+    window.addEventListener('touchend', () => isDrawing = false);
+
+    container.addEventListener('mouseenter', () => hudCursor.style.display = 'block');
+    container.addEventListener('mouseleave', () => hudCursor.style.display = 'none');
+    
+    createLayer('Fondo Papel', true);
+</script>
+</body>
+</html>
